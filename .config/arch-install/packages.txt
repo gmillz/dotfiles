@@ -2,7 +2,7 @@
 google-chrome
 
 # Text Editor
-codium
+vscodium
 
 # File Explorer
 thunar
