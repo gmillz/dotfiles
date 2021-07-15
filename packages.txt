@@ -1,0 +1,8 @@
+# Web Browser
+google-chrome
+
+# Text Editor
+codium
+
+# File Explorer
+thunar
