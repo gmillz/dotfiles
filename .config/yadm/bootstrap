@@ -1,5 +1,5 @@
 #!/bin/bash
 
 if [ -f "/etc/arch-release" ]; then
-    sudo -S pacman -S starship
+    sudo -S pacman -S --noconfirm starship
 fi
