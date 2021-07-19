@@ -6,3 +6,6 @@ vscodium-bin
 
 # File Explorer
 thunar
+
+# Terminal
+kitty
