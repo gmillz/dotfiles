@@ -32,7 +32,7 @@ from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
 mod = "mod4"
-terminal = "xfce4-terminal"
+terminal = "kitty"
 
 default_browser = "google-chrome-stable"
 default_editor = "codium"
