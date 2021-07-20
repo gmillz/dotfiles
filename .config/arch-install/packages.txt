@@ -9,3 +9,11 @@ thunar
 
 # Terminal
 kitty
+
+# for android development
+lineageos-devel
+python2-protobuf
+
+# chat apps
+slack-desktop
+telegram-desktop-bin
