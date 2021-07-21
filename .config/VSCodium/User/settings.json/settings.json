@@ -1,0 +1,8 @@
+{
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnPaste": true,
+    "editor.insertSpaces": true,
+    "[makefile]": {
+        "editor.insertSpaces": false
+    }
+}
