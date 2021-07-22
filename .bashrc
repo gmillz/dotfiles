@@ -23,3 +23,17 @@ unset -f _set_my_PS1
 
 # Set starship prompt
 eval "$(starship init bash)"
+
+PATH=/opt/android-sdk/platform-tools:$PATH
+
+# ALIASES
+alias ssh="kitty +kitten ssh"
+
+# CCACHE
+export USE_CCACHE=1
+export CCACHE_DIR=/home/ccache
+export CCACHE_EXEC=$(which ccache)
+export CCACHE_NLEVELS=4
+export CCACHE_COMPILERCHECK=content
+export CCACHE_NOHASHDIR=true
+export CCACHE_TEMPDIR=/tmp
