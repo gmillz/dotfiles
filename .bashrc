@@ -7,6 +7,8 @@
 
 [[ -f ~/.welcome_screen ]] && . ~/.welcome_screen
 
+[[ -f /usr/share/bash-completion/bash_completion ]] && source /usr/share/bash-completion/bash_completion
+
 _set_my_PS1() {
     PS1='[\u@\h \W]\$ '
     if [ "$(whoami)" = "liveuser" ] ; then
