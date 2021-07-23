@@ -1,4 +1,5 @@
 #!/bin/bash
 
-volumeicon &
-nm-applet &
+lxsession &
+picom &
+nitrogen --restore &

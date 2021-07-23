@@ -29,14 +29,40 @@ from typing import List  # noqa: F401
 from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
-from libqtile.utils import guess_terminal
+
+import os
 
 mod = "mod4"
 terminal = "kitty"
 
+home = os.path.expanduser('~')
+
+MYCOLORS = [
+    '#073642',
+    '#dc322f',
+    '#00ff2a',
+    '#b58900',
+    '#268bd2',
+    '#d33682',
+    '#2aa198',
+    '#eee8d5'
+]
+
+BLACK = MYCOLORS[0]
+RED = MYCOLORS[1]
+GREEN = MYCOLORS[2]
+YELLOW = MYCOLORS[3]
+BLUE = MYCOLORS[4]
+MAGENTA = MYCOLORS[5]
+CYAN = MYCOLORS[6]
+WHITE = MYCOLORS[7]
+
 default_browser = "google-chrome-stable"
 default_editor = "codium"
-default_explorer = "thunar"
+default_explorer = "pcmanfm"
+
+volumecontrol = home + "/.local/bin/volumecontrol"
+brightnesscontrol = home + "/.local/bin/brightnesscontrol"
 
 keys = [
     # Switch between windows
@@ -66,6 +92,7 @@ keys = [
     Key([mod, "shift"], "w", lazy.spawn("dm-wifi"), desc="Wifi Menu"),
     Key([mod, "shift"], "s", lazy.spawn("dm-websearch"), desc="Web Search"),
     Key([mod, "shift"], "v", lazy.spawn("dm-kill"), desc="Kill App"),
+    Key([mod, "shift"], "c", lazy.spawn("dm-maim"), desc="Take screenshot"),
 
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
@@ -103,19 +130,36 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(),
         desc="Spawn a command using a prompt widget"),
+
+    # Audio
+    Key([], "XF86AudioMute", lazy.spawn(volumecontrol + " mute"), desc="Mute Audio"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn(volumecontrol + " down"), desc="Volume down"),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn(volumecontrol + " up"), desc="Volume up"),
+    Key([mod, "shift"], "m", lazy.spawn(volumecontrol + " mutemic"), desc="Mute mic"),
+
+    Key([], "XF86MonBrightnessDown", lazy.spawn(brightnesscontrol + " down"), desc="Brightness down"),
+    Key([], "XF86MonBrightnessUp", lazy.spawn(brightnesscontrol + " up"), desc="Brightness up"),
 ]
 
-groups = [Group(i) for i in "123456789"]
+group_names = [("DEV", {'layout': 'columns'}),
+               ("SYS", {'layout': 'columns'}),
+               ("WWW", {'layout': 'columns'}),
+               ("DOC", {'layout': 'columns'}),
+               ("VMS", {'layout': 'floating'}),
+               ("CHAT", {'layout': 'columns'}),
+               ("MED", {'layout': 'columns'})]
 
-for i in groups:
+groups = [Group(name, **kwargs) for name, kwargs in group_names]
+
+for i, (name, kwargs) in enumerate(group_names, 1):
     keys.extend([
         # mod1 + letter of group = switch to group
-        Key([mod], i.name, lazy.group[i.name].toscreen(),
-            desc="Switch to group {}".format(i.name)),
+        Key([mod], str(i), lazy.group[name].toscreen(),
+            desc="Switch to group {}".format(name)),
 
         # mod1 + shift + letter of group = switch to & move focused window to group
-        Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
-            desc="Switch to & move focused window to group {}".format(i.name)),
+        Key([mod, "shift"], str(i), lazy.window.togroup(name, switch_group=True),
+            desc="Switch to & move focused window to group {}".format(name)),
         # Or, use below if you prefer not to switch to that group.
         # # mod1 + shift + letter of group = move focused window to group
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
@@ -126,21 +170,21 @@ layouts = [
     layout.Columns(border_focus_stack='#d75f5f'),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
-    # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
-    # layout.Matrix(),
-    # layout.MonadTall(),
-    # layout.MonadWide(),
-    # layout.RatioTile(),
-    # layout.Tile(),
-    # layout.TreeTab(),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
+    layout.Stack(num_stacks=2),
+    layout.Bsp(),
+    layout.Matrix(),
+    layout.MonadTall(),
+    layout.MonadWide(),
+    layout.RatioTile(),
+    layout.Tile(),
+    layout.TreeTab(),
+    layout.VerticalTile(),
+    layout.Zoomy(),
 ]
 
 widget_defaults = dict(
     font='sans',
-    fontsize=12,
+    fontsize=14,
     padding=3,
 )
 extension_defaults = widget_defaults.copy()
@@ -159,13 +203,35 @@ screens = [
                     },
                     name_transform=lambda name: name.upper(),
                 ),
-                widget.TextBox("default config", name="default"),
-                widget.Volume(),
+                widget.GenPollText(
+                    update_interval=1,
+                    **widget_defaults,
+                    func=lambda: subprocess.check_output(os.path.expanduser("~/.local/bin/statusbar/volumecontrol")).decode(),
+                    mouse_callbacks = {
+                        'Button1': lambda: qtile.cmd_spawn(os.path.expanduser("~/.local/bin/statusbar/volumecontrol down"), shell=True),
+                        'Button2': lambda: qtile.cmd_spawn(os.path.expanduser("~/.local/bin/statusbar/volumecontrol mute"), shell=True),
+                        'Button3': lambda: qtile.cmd_spawn(os.path.expanduser("~/.local/bin/statusbar/volumecontrol up"), shell=True)
+                    }
+                ),
+                widget.DF(
+                    partition = '/home',
+                    visible_on_warn = False,
+                    measure = 'G',
+                ),
+                widget.CheckUpdates(
+                    **widget_defaults,
+                    update_interval = 120,
+                    distro = 'Arch_paru',
+                    display_format = 'Updates: {updates}',
+                    color_have_updates = GREEN,
+                    execute = 'kitty -e paru',
+                    no_update_string = "No updates available",
+                ),
                 widget.Systray(),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
                 widget.QuickExit(),
             ],
-            24,
+            30,
         ),
     ),
 ]
