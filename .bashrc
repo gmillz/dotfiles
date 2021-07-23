@@ -25,9 +25,14 @@ unset -f _set_my_PS1
 eval "$(starship init bash)"
 
 PATH=/opt/android-sdk/platform-tools:$PATH
+build_tools_version=$(pacman -Qi android-sdk-build-tools | grep -Po '(?<=Version).*' | cut -d'r' -f2 | cut -d'-' -f1)
+PATH=/opt/android-sdk/build-tools/${build_tools_version}:$PATH
 
 # ALIASES
 alias ssh="kitty +kitten ssh"
+
+# pacman
+alias user-installed="comm -23 <(paru -Qqett | sort) <(paru -Qqg base -g base-devel | sort | uniq)"
 
 # CCACHE
 export USE_CCACHE=1
