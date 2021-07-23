@@ -5,7 +5,9 @@ google-chrome
 vscodium-bin
 
 # File Explorer
-thunar
+pcmanfm-gtk3
+gvfs
+xarchiver
 
 # Terminal
 kitty
@@ -13,7 +15,23 @@ kitty
 # for android development
 lineageos-devel
 python2-protobuf
+android-sdk-platform-tools
+android-udev
 
 # chat apps
 slack-desktop
 telegram-desktop-bin
+
+# Theme
+breeze
+breeze-gtk
+
+# dmscripts
+dmscripts-git
+maim
+
+htop
+network-manager-applet
+openrgb
+pamixer
+zenity
